@@ -19,4 +19,95 @@ a.person{color:inherit;text-decoration:none;cursor:pointer}a.person:hover{border
 <script>const date=document.getElementById('release');function tick(){const v=date.value;if(!v)return;const target=new Date(v+'T00:00:00');let delta=Math.max(0,target-new Date());const days=Math.floor(delta/86400000);delta%=86400000;const hours=Math.floor(delta/3600000);delta%=3600000;const minutes=Math.floor(delta/60000);const seconds=Math.floor(delta%60000/1000);for(const [id,n] of Object.entries({days,hours,minutes,seconds}))document.getElementById(id).textContent=String(n).padStart(2,'0');document.getElementById('dateNote').textContent=target<=new Date()?'La date cible est arrivée ou dépassée.':'Compte à rebours basé sur la date que tu as sélectionnée.'}date.addEventListener('change',tick);tick();setInterval(tick,1000);document.querySelectorAll('#navigation-principale a').forEach(a=>a.addEventListener('click',()=>{if(innerWidth<=760){document.getElementById('navigation-principale').classList.remove('is-open');document.querySelector('.menu').setAttribute('aria-expanded','false')}}));</script><script>
 (async()=>{const el=document.getElementById('hubfeed');try{const r=await fetch('./data/news.json',{cache:'no-store'});if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data.items)||!data.items.length)throw Error();el.replaceChildren();data.items.slice(0,8).forEach(item=>{if(!/^https:\/\//.test(item.url))return;const article=document.createElement('article'),a=document.createElement('a'),small=document.createElement('small');a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.title;small.textContent=[item.source,item.date].filter(Boolean).join(' · ');article.append(a,small);el.append(article)})}catch(e){el.textContent='Flux automatique indisponible pour le moment. Consulte les annonces officielles via le lien Rockstar ci-dessus.'}})();
 const key='vicevi_tips_v1',form=document.getElementById('tipform'),list=document.getElementById('mytips');function renderTips(){list.replaceChildren();let tips=[];try{tips=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}tips.forEach(t=>{const a=document.createElement('article'),h=document.createElement('strong'),p=document.createElement('p'),sm=document.createElement('small');h.textContent=t.type+' — '+t.name;p.textContent=t.text;sm.textContent='Brouillon local · non publié';a.append(h,p,sm);list.append(a)})}form.addEventListener('submit',e=>{e.preventDefault();let tips=[];try{tips=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}tips.unshift({name:document.getElementById('tipname').value.trim(),type:document.getElementById('tiptype').value,text:document.getElementById('tiptext').value.trim()});localStorage.setItem(key,JSON.stringify(tips.slice(0,30)));form.reset();document.getElementById('tipstatus').textContent='Proposition enregistrée sur cet appareil uniquement.';renderTips()});renderTips();
-</script><script defer src="analytics-consent.js"></script></body></html>
+</script><script id="vicevi-analytics-inline">
+/* VICE / VI : mesure d'audience optionnelle. Aucun chargement Google sans accord. */
+(function () {
+  'use strict';
+  var measurementId = 'G-CRWBGQ854J';
+  var storageKey = 'vicevi_analytics_consent_v1';
+  var choice;
+  try { choice = localStorage.getItem(storageKey); } catch (_) { choice = null; }
+  function loadAnalytics() {
+    if (window.__viceviAnalyticsLoaded) return;
+    window.__viceviAnalyticsLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, {
+      anonymize_ip: true,
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false
+    });
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
+    document.head.appendChild(script);
+  }
+  function saveChoice(value) {
+    try { localStorage.setItem(storageKey, value); } catch (_) {}
+    if (value === 'accepted') { window['ga-disable-' + measurementId] = false; loadAnalytics(); }
+    else { window['ga-disable-' + measurementId] = true; if (window.__viceviAnalyticsLoaded) { window.location.reload(); return; } }
+    var box = document.getElementById('vicevi-consent-box');
+    if (box) box.remove();
+    var status = document.getElementById('vicevi-consent-status');
+    if (status) status.textContent = value === 'accepted' ? 'Statistiques autorisées sur cet appareil.' : 'Statistiques refusées sur cet appareil.';
+  }
+  function showChoice() {
+    if (document.getElementById('vicevi-consent-box')) return;
+    var box = document.createElement('section');
+    box.id = 'vicevi-consent-box';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-label', 'Choix des statistiques');
+    box.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;z-index:99999;max-width:690px;margin:0 auto;padding:18px 22px;background:#21132f;color:#fff;border:1px solid #bb83c0;border-radius:12px;box-shadow:0 12px 40px #0008;font:15px/1.5 system-ui,Arial,sans-serif';
+    var title = document.createElement('strong');
+    title.textContent = 'Statistiques de visite';
+    var text = document.createElement('p');
+    text.style.margin = '8px 0 14px';
+    text.textContent = 'Avec ton accord, VICE / VI utilise Google Analytics pour comprendre quelles pages sont consultées. Tu peux refuser sans perdre l’accès au site et changer d’avis à tout moment.';
+    var link = document.createElement('a');
+    link.href = 'confidentialite.html#statistiques';
+    link.textContent = 'En savoir plus';
+    link.style.cssText = 'color:#ffb0db;display:inline-block;margin-right:14px';
+    var buttons = document.createElement('div');
+    buttons.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:10px';
+    [['Refuser', 'rejected'], ['Accepter', 'accepted']].forEach(function (item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = item[0];
+      button.style.cssText = 'border:1px solid #e2a7d4;border-radius:7px;padding:10px 16px;background:' + (item[1] === 'accepted' ? '#ff4aab;color:#200b26' : '#342244;color:#fff') + ';font:700 14px system-ui;cursor:pointer';
+      button.addEventListener('click', function () { saveChoice(item[1]); });
+      buttons.appendChild(button);
+    });
+    box.append(title, text, link, buttons);
+    document.body.appendChild(box);
+  }
+  function start() {
+    if (choice === 'accepted') {
+      loadAnalytics();
+    } else {
+      window['ga-disable-' + measurementId] = true;
+      if (choice !== 'rejected') showChoice();
+    }
+    var footer = document.querySelector('footer') || document.body;
+    var prefs = document.createElement('p');
+    prefs.style.cssText = 'margin:14px 0;font:13px/1.5 system-ui,Arial,sans-serif';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Gérer les statistiques';
+    button.style.cssText = 'background:transparent;border:1px solid #ba84bd;color:#ffb0db;padding:8px 11px;border-radius:6px;cursor:pointer';
+    button.addEventListener('click', function () {
+      var existing = document.getElementById('vicevi-consent-box');
+      if (existing) existing.remove();
+      showChoice();
+    });
+    var status = document.createElement('span');
+    status.id = 'vicevi-consent-status';
+    status.style.cssText = 'margin-left:10px;color:#dfcddd';
+    prefs.append(button, status);
+    footer.appendChild(prefs);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+
+</script></body></html>
