@@ -60,9 +60,12 @@
     document.body.appendChild(box);
   }
   function start() {
-    if (choice === 'accepted') loadAnalytics();
-    else window['ga-disable-' + measurementId] = true;
-    else if (choice !== 'rejected') showChoice();
+    if (choice === 'accepted') {
+      loadAnalytics();
+    } else {
+      window['ga-disable-' + measurementId] = true;
+      if (choice !== 'rejected') showChoice();
+    }
     var footer = document.querySelector('footer') || document.body;
     var prefs = document.createElement('p');
     prefs.style.cssText = 'margin:14px 0;font:13px/1.5 system-ui,Arial,sans-serif';
