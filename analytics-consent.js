@@ -23,7 +23,8 @@
   }
   function saveChoice(value) {
     try { localStorage.setItem(storageKey, value); } catch (_) {}
-    if (value === 'accepted') loadAnalytics();
+    if (value === 'accepted') { window['ga-disable-' + measurementId] = false; loadAnalytics(); }
+    else { window['ga-disable-' + measurementId] = true; if (window.__viceviAnalyticsLoaded) { window.location.reload(); return; } }
     var box = document.getElementById('vicevi-consent-box');
     if (box) box.remove();
     var status = document.getElementById('vicevi-consent-status');
@@ -60,6 +61,7 @@
   }
   function start() {
     if (choice === 'accepted') loadAnalytics();
+    else window['ga-disable-' + measurementId] = true;
     else if (choice !== 'rejected') showChoice();
     var footer = document.querySelector('footer') || document.body;
     var prefs = document.createElement('p');
